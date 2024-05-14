@@ -1,0 +1,60 @@
+import java.sql.{Connection, Date, DriverManager, PreparedStatement}
+
+def write_to_db(orders:List[String], rules:List[((String) => Boolean, (String) => Double)], writer: PrintWriter, f: File): Unit = {
+    var connection: Connection = null
+    var preparedStatement: PreparedStatement = null
+    val url = "jdbc:oracle:thin:@//localhost:1521/XE"
+    val username = "scala_project"
+    val password = "123"
+
+    val data = orders.map(
+      order =>
+        prepare_for_writing(order, rules, writer,f)
+    )
+
+    val insertStatement =
+      """
+        |INSERT INTO orders (order_date, expiry_date, days_to_expiry, product_category,
+        |                   product_name, quantity, unit_price, channel, payment_method,
+        |                   discount, total_due)
+        |VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        |""".stripMargin
+    try {
+      Class.forName("oracle.jdbc.driver.OracleDriver") // Load the Oracle JDBC driver
+      connection = DriverManager.getConnection(url, username, password)
+      log_event(writer, f, "Debug", "Successfully Opened database connection")
+      // Prepare the INSERT statement
+      preparedStatement = connection.prepareStatement(insertStatement)
+
+      // Insert data into the table
+      data.foreach { case (orderDate, expiryDate, daysToExpiry, productCategory, productName, quantity,
+      unitPrice, channel, paymentMethod, discount, totalDue) =>
+        preparedStatement.setDate(1, Date.valueOf(orderDate.toString))
+        preparedStatement.setDate(2, Date.valueOf(expiryDate.toString))
+        preparedStatement.setInt(3, daysToExpiry)
+        preparedStatement.setString(4, productCategory)
+        preparedStatement.setString(5, productName)
+        preparedStatement.setInt(6, quantity)
+        preparedStatement.setDouble(7, unitPrice)
+        preparedStatement.setString(8, channel)
+        preparedStatement.setString(9, paymentMethod)
+        preparedStatement.setDouble(10, discount)
+        preparedStatement.setDouble(11, totalDue)
+
+        preparedStatement.addBatch() // Add the current INSERT statement to the batch
+      }
+
+      // Execute the batch of INSERT statements
+      preparedStatement.executeBatch()
+    } catch {
+      case e: Exception =>
+        log_event(writer, f, "Error", s"Failed to close preparedStatement: ${e.getMessage}")
+    } finally {
+      // Close resources
+      if (preparedStatement != null) preparedStatement.close()
+      if (connection != null) connection.close()
+      log_event(writer,f,"Info", "Successfully inserted into database")
+      log_event(writer,f,"Debug", "Closed database connection")
+    }
+  }
+
