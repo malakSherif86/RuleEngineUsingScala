@@ -39,7 +39,7 @@ Review logs.txt: for detailed event logs and any encountered errors during proce
 YOU can add those liness:
 
 // Define a CSV writer
-  val csvWriter = new FileWriter(new File("C:/Users/hp/IdeaProjects/res/orders_with_discounts.csv"))
+ ```val csvWriter = new FileWriter(new File("C:/Users/hp/IdeaProjects/res/orders_with_discounts.csv"))
   // Write CSV header
   csvWriter.write("Timestamp,Product Name,Expiry Date,Quantity,Unit Price,Channel,Payment Method,Discount,Final Price\n")
 val discountString = (finalDiscount.setScale(3, BigDecimal.RoundingMode.HALF_UP))*100
