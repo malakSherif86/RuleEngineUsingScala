@@ -36,7 +36,8 @@ Update database connection details within the Singleton object in the code, incl
 Review logs.txt: for detailed event logs and any encountered errors during processing.
 
 # want to write to csv 
-YOU can add those liness
+YOU can add those liness:
+
 // Define a CSV writer
   val csvWriter = new FileWriter(new File("C:/Users/hp/IdeaProjects/res/orders_with_discounts.csv"))
   // Write CSV header
