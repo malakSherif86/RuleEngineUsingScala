@@ -36,7 +36,8 @@ Update database connection details within the Singleton object in the code, incl
 Review logs.txt: for detailed event logs and any encountered errors during processing.
 
 # want to write to csv 
-YOU can add those liness:
+**i also provided the code that can write both the to database and the csv in the files called writeCsvDatbase**
+or you can add those liness:
 
  ```// Define a CSV writer
 val csvWriter = new FileWriter(new File("C:/Users/hp/IdeaProjects/res/orders_with_discounts.csv"))
@@ -46,4 +47,4 @@ val discountString = (finalDiscount.setScale(3, BigDecimal.RoundingMode.HALF_UP)
     csvWriter.write(s"${order.timestamp},${order.productName},${order.expiryDate},${order.quantity},${order.unitPrice},${order.channel},${order.paymentMethod},$discountString,$finalPrice\n")
     csvWriter.close()
 
-**i also provided the code that can write both the to database and the csv in the files called writeCsvDatbase**
+
